@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Dosificación Pediátrica | Calculadora Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .header .welcome {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 10px;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .step.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .step-line {
+            width: 60px;
+            height: 3px;
+            background: #e0e0e0;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .medication-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .med-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 3px solid transparent;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .med-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+        }
+
+        .med-card h3 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .med-card .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .concentration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .concentration-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .concentration-card:hover {
+            transform: scale(1.05);
+            border-color: #ff6b6b;
+        }
+
+        .concentration-card h4 {
+            color: #d63031;
+            font-size: 1.3em;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .results-container {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .results-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .result-info {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-info p {
+            font-size: 1.1em;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .result-info strong {
+            color: #667eea;
+        }
+
+        .dosage-key {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .dosage-key h3 {
+            color: #d63031;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .dosage-main {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .dosage-main .amount {
+            font-size: 2.5em;
+            color: #6c5ce7;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .warning-box p {
+            color: #c62828;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .medication-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Sistema de Dosificación Pediátrica</h1>
+            <p class="subtitle">Calculadora Profesional de Dosis Medicamentosas</p>
+            <div class="welcome">¡Bienvenida espocita KAREN!</div>
+        </div>
+
+        <div class="main-card">
+            <div class="step-indicator" id="stepIndicator"></div>
+
+            <!-- Step 1: Selección de Medicamento -->
+            <div id="step1" class="step-content">
+                <h2 class="section-title">📋 Seleccionar Medicamento</h2>
+                <div class="medication-grid" id="medicationGrid"></div>
+            </div>
+
+            <!-- Step 2: Dosis y Peso -->
+            <div id="step2" class="step-content hidden">
+                <h2 class="section-title" id="medTitle"></h2>
+                <div class="info-box" id="rangeInfo"></div>
+                <div class="form-group">
+                    <label>💊 Dosis Ponderal (mg/kg)</label>
+                    <input type="number" id="dosePerKg" step="0.1" placeholder="Ingrese la dosis">
+                </div>
+                <div class="form-group">
+                    <label>⚖️ Peso del Niño (kg)</label>
+                    <input type="number" id="weight" step="0.1" placeholder="Ingrese el peso">
+                </div>
+                <button class="btn btn-primary" onclick="goToStep(3)">Siguiente →</button>
+                <button class="btn btn-secondary" onclick="goToStep(1)">← Regresar</button>
+            </div>
+
+            <!-- Step 3: Concentración -->
+            <div id="step3" class="step-content hidden">
+                <h2 class="section-title">💧 Seleccionar Concentración</h2>
+                <div class="concentration-grid" id="concentrationGrid"></div>
+                <button class="btn btn-secondary" onclick="goToStep(2)">← Regresar</button>
+            </div>
+
+            <!-- Step 4: Número de Tomas (solo para antibióticos) -->
+            <div id="step4" class="step-content hidden">
+                <h2 class="section-title">🕐 Dividir por Tomas</h2>
+                <div class="info-box" id="frecuenciaInfo"></div>
+                <div class="form-group">
+                    <label>Número de Tomas por Día</label>
+                    <input type="number" id="numDoses" min="1" placeholder="Ej: 2, 3 o 4">
+                </div>
+                <button class="btn btn-primary" onclick="calculateDose()">Calcular Dosis</button>
+                <button class="btn btn-secondary" onclick="goToStep(3)">← Regresar</button>
+            </div>
+
+            <!-- Step 5: Resultados -->
+            <div id="step5" class="step-content hidden">
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MEDICATIONS = {
+            "metronidazol": {
+                rango_dosis: [30, 50],
+                concentraciones: {"1": [5, 125], "2": [5, 250]},
+                frecuencia: "2 (c/12h) o 3 (c/8h)",
+                titulo: "METRONIDAZOL"
+            },
+            "ciprofloxacina": {
+                rango_dosis: [20, 40],
+                concentraciones: {"1": [5, 250]},
+                frecuencia: "2 (c/12h)",
+                titulo: "CIPROFLOXACINA"
+            },
+            "metoclopramida": {
+                rango_dosis: [0.1, 0.5],
+                concentraciones: {"1": [5, 5]},
+                frecuencia: "3 (c/8h) o 4 (c/6h)",
+                titulo: "METOCLOPRAMIDA"
+            },
+            "dicloxacilina": {
+                rango_dosis: [25, 50],
+                concentraciones: {"1": [5, 125], "2": [5, 250]},
+                frecuencia: "4 (c/6h)",
+                titulo: "DICLOXACILINA"
+            },
+            "amoxicilina": {
+                rango_dosis: [40, 90],
+                concentraciones: {"1": [5, 250], "2": [5, 500]},
+                frecuencia: "2 (c/12h) o 3 (c/8h)",
+                titulo: "AMOXICILINA"
+            },
+            "amoxicilina_clavulanico": {
+                rango_dosis: [25, 90],
+                concentraciones: {"1": [5, 250], "2": [5, 400], "3": [5, 600]},
+                frecuencia: "2 (c/12h) o 3 (c/8h)",
+                titulo: "AMOXICILINA + CLAVULÁNICO"
+            },
+            "dipirona": {
+                rango_dosis: [8, 16],
+                concentraciones: {"1": [1, 50], "2": [5, 250]},
+                frecuencia: "3 (c/8h) o 4 (c/6h)",
+                titulo: "DIPIRONA (Metamizol)",
+                isPorDosis: true
+            },
+            "ibuprofeno": {
+                rango_dosis: [5, 10],
+                concentraciones: {"1": [5, 100], "2": [5, 200]},
+                frecuencia: "3 (c/8h) o 4 (c/6h)",
+                titulo: "IBUPROFENO (AINE)",
+                isPorDosis: true
+            },
+            "paracetamol": {
+                rango_dosis: [10, 15],
+                concentraciones: {"1": [5, 120], "2": [5, 160]},
+                frecuencia: "4 (c/6h) o 6 (c/4h)",
+                titulo: "PARACETAMOL",
+                isPorDosis: true
+            },
+            "clindamicina": {
+                rango_dosis: [8, 30],
+                concentraciones: {"1": [5, 75]},
+                frecuencia: "3 (c/8h) o 4 (c/6h)",
+                titulo: "CLINDAMICINA"
+            },
+            "diclofenaco": {
+                rango_dosis: [0.5, 3],
+                concentraciones: {"1": [5, 9]},
+                frecuencia: "2 (c/12h) o 3 (c/8h)",
+                titulo: "DICLOFENACO"
+            },
+            "cotrimoxazol": {
+                rango_dosis: [6, 20],
+                concentraciones: {"1": [5, 40]},
+                frecuencia: "2 (c/12h)",
+                titulo: "COTRIMOXAZOL (TMP)"
+            },
+            "mebendazol": {
+                titulo: "MEBENDAZOL",
+                isFixed: true,
+                info: "Dosis Fija: <strong>100 mg</strong> dos veces/día por 3 días<br>(Susp. 100 mg/5 mL = <strong>5 mL por toma</strong>)"
+            },
+            "albendazol": {
+                titulo: "ALBENDAZOL",
+                isFixed: true,
+                info: "Dosis Fija: <strong>400 mg</strong> dosis única<br>(Susp. 200 mg/5 mL = <strong>10 mL dosis única</strong>)"
+            }
+        };
+
+        let currentStep = 1;
+        let selectedMed = null;
+        let selectedConcentration = null;
+
+        function initApp() {
+            renderMedications();
+            updateStepIndicator();
+        }
+
+        function renderMedications() {
+            const grid = document.getElementById('medicationGrid');
+            grid.innerHTML = '';
+            
+            for (const [key, med] of Object.entries(MEDICATIONS)) {
+                const card = document.createElement('div');
+                card.className = 'med-card';
+                card.onclick = () => selectMedication(key);
+                card.innerHTML = `
+                    <h3>${med.titulo}</h3>
+                    ${med.isFixed ? '<span class="badge">Dosis Fija</span>' : ''}
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function selectMedication(key) {
+            selectedMed = key;
+            const med = MEDICATIONS[key];
+
+            if (med.isFixed) {
+                showFixedDose(med);
+            } else {
+                const unit = med.isPorDosis ? "DOSIS" : "DÍA";
+                document.getElementById('medTitle').textContent = `💊 ${med.titulo}`;
+                document.getElementById('rangeInfo').innerHTML = 
+                    `<strong>RANGO COMÚN:</strong> ${med.rango_dosis[0]} - ${med.rango_dosis[1]} mg/kg/${unit}`;
+                goToStep(2);
+            }
+        }
+
+        function showFixedDose(med) {
+            const results = `
+                <div class="results-header">
+                    <h2>✅ ${med.titulo}</h2>
+                    <p>Dosificación de Dosis Fija</p>
+                </div>
+                <div class="result-info">
+                    <p style="font-size: 1.3em; text-align: center;">${med.info}</p>
+                </div>
+                <div class="warning-box">
+                    <p>⚠️ VERIFICACIÓN MÉDICA OBLIGATORIA ⚠️</p>
+                </div>
+                <button class="btn btn-success" onclick="resetCalculator()">Nueva Consulta</button>
+            `;
+            document.getElementById('resultsContainer').innerHTML = results;
+            goToStep(5);
+        }
+
+        function goToStep(step) {
+            // Validations
+            if (step === 3 && currentStep === 2) {
+                const dose = document.getElementById('dosePerKg').value;
+                const weight = document.getElementById('weight').value;
+                if (!dose || !weight || parseFloat(dose) <= 0 || parseFloat(weight) <= 0) {
+                    alert('Por favor, ingrese valores válidos para la dosis y el peso.');
+                    return;
+                }
+                renderConcentrations();
+            }
+
+            if (step === 4 && currentStep === 3) {
+                const med = MEDICATIONS[selectedMed];
+                if (med.isPorDosis) {
+                    calculateDose();
+                    return;
+                }
+                document.getElementById('frecuenciaInfo').innerHTML = 
+                    `<strong>FRECUENCIA COMÚN:</strong> ${med.frecuencia}`;
+            }
+
+            // Hide all steps
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+
+            // Show current step
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            currentStep = step;
+            updateStepIndicator();
+        }
+
+        function renderConcentrations() {
+            const grid = document.getElementById('concentrationGrid');
+            grid.innerHTML = '';
+            const med = MEDICATIONS[selectedMed];
+
+            for (const [key, [ml, mg]] of Object.entries(med.concentraciones)) {
+                const card = document.createElement('div');
+                card.className = 'concentration-card';
+                card.onclick = () => {
+                    selectedConcentration = key;
+                    goToStep(4);
+                };
+                card.innerHTML = `<h4>${mg} mg / ${ml} mL</h4>`;
+                grid.appendChild(card);
+            }
+        }
+
+        function calculateDose() {
+            const med = MEDICATIONS[selectedMed];
+            const [ml, mg] = med.concentraciones[selectedConcentration];
+            const weight = parseFloat(document.getElementById('weight').value);
+            const dosePerKg = parseFloat(document.getElementById('dosePerKg').value);
+
+            let resultsHTML = '';
+
+            if (med.isPorDosis) {
+                const doseMg = weight * dosePerKg;
+                const doseMl = (doseMg * ml) / mg;
+                const maxDoses = med.frecuencia.includes("o 4") ? 4 : 
+                                 med.frecuencia.includes("o 6") ? 6 : 
+                                 parseInt(med.frecuencia.split(" ")[0]);
+
+                resultsHTML = `
+                    <div class="results-header">
+                        <h2>✅ Cálculo de Dosis para</h2>
+                        <h2>${med.titulo}</h2>
+                    </div>
+                    <div class="result-info">
+                        <p><strong>PESO:</strong> ${weight.toFixed(1)} kg</p>
+                        <p><strong>CONCENTRACIÓN:</strong> ${mg} mg / ${ml} mL</p>
+                        <p><strong>DOSIS POR TOMA (mg):</strong> ${doseMg.toFixed(2)} mg</p>
+                    </div>
+                    <div class="dosage-key">
+                        <h3>🎯 DOSIFICACIÓN CLAVE</h3>
+                        <div class="dosage-main">
+                            <p style="font-size: 1.5em; margin-bottom: 10px;">▶️ Administrar:</p>
+                            <p class="amount">${doseMl.toFixed(2)} mL</p>
+                        </div>
+                        <div class="dosage-main">
+                            <p style="font-size: 1.3em; color: #333;">
+                                <strong>▶️ Frecuencia:</strong> ${med.frecuencia}
+                            </p>
+                            <p style="color: #666; margin-top: 10px;">(Máx. ${maxDoses} tomas en 24h)</p>
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <p>⚠️ VERIFICACIÓN MÉDICA OBLIGATORIA ⚠️</p>
+                    </div>
+                    <button class="btn btn-success" onclick="resetCalculator()">Nueva Consulta</button>
+                `;
+            } else {
+                const numDoses = parseInt(document.getElementById('numDoses').value);
+                if (!numDoses || numDoses <= 0) {
+                    alert('Por favor, ingrese un número válido de tomas.');
+                    return;
+                }
+
+                const dailyDoseMg = weight * dosePerKg;
+                const dailyDoseMl = (dailyDoseMg * ml) / mg;
+                const dosePerTomaMl = dailyDoseMl / numDoses;
+                const hoursInterval = 24 / numDoses;
+
+                resultsHTML = `
+                    <div class="results-header">
+                        <h2>✅ Cálculo de Dosis para</h2>
+                        <h2>${med.titulo}</h2>
+                    </div>
+                    <div class="result-info">
+                        <p><strong>PESO:</strong> ${weight.toFixed(1)} kg</p>
+                        <p><strong>CONCENTRACIÓN:</strong> ${mg} mg / ${ml} mL</p>
+                        <p><strong>DOSIS DIARIA TOTAL (mg):</strong> ${dailyDoseMg.toFixed(2)} mg</p>
+                        <p><strong>DOSIS DIARIA TOTAL (mL):</strong> ${dailyDoseMl.toFixed(2)} mL</p>
+                    </div>
+                    <div class="dosage-key">
+                        <h3>🎯 DOSIFICACIÓN CLAVE</h3>
+                        <div class="dosage-main">
+                            <p style="font-size: 1.5em; margin-bottom: 10px;">▶️ Administrar por toma:</p>
+                            <p class="amount">${dosePerTomaMl.toFixed(2)} mL</p>
+                        </div>
+                        <div class="dosage-main">
+                            <p style="font-size: 1.3em; color: #333;">
+                                <strong>▶️ Frecuencia:</strong> Cada ${hoursInterval} horas (${numDoses} tomas/día)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <p>⚠️ VERIFICACIÓN MÉDICA OBLIGATORIA ⚠️</p>
+                    </div>
+                    <button class="btn btn-success" onclick="resetCalculator()">Nueva Consulta</button>
+                `;
+            }
+
+            document.getElementById('resultsContainer').innerHTML = resultsHTML;
+            goToStep(5);
+        }
+
+        function updateStepIndicator() {
+            const indicator = document.getElementById('stepIndicator');
+            indicator.innerHTML = '';
+
+            const totalSteps = 5;
+            for (let i = 1; i <= totalSteps; i++) {
+                const step = document.createElement('div');
+                step.className = 'step';
+                if (i < currentStep) step.classList.add('completed');
+                if (i === currentStep) step.classList.add('active');
+                step.textContent = i;
+                indicator.appendChild(step);
+
+                if (i < totalSteps) {
+                    const line = document.createElement('div');
+                    line.className = 'step-line';
+                    indicator.appendChild(line);
+                }
+            }
+        }
+
+        function resetCalculator() {
+            selectedMed = null;
+            selectedConcentration = null;
+            document.getElementById('dosePerKg').value = '';
+            document.getElementById('weight').value = '';
+            document.getElementById('numDoses').value = '';
+            goToStep(1);
+        }
+
+        // Initialize app
+        initApp();
+    </script>
+</body>
+</html>
